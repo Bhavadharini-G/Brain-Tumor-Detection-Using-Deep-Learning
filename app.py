@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
-from keras.preprocessing.image import load_img, img_to_array
+from keras.preprocessing.image import img_to_array
 from PIL import Image
 import os
 
@@ -10,6 +10,10 @@ model = load_model('Models/model.h5')
 
 # Class labels
 class_labels = ['pituitary', 'glioma', 'notumor', 'meningioma']
+
+# Ensure uploads directory exists
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Title and layout
 st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
@@ -36,6 +40,12 @@ def predict_tumor(image):
 
 # If image is uploaded
 if uploaded_file is not None:
+    # Save file to uploads directory
+    save_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+    with open(save_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.info(f"✅ File saved to {save_path}")
+
     # Load and display image
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded MRI Image", use_container_width=True)
