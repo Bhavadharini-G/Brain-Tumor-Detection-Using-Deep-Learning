@@ -12,7 +12,7 @@ model = load_model('Models/model.h5')
 class_labels = ['pituitary', 'glioma', 'notumor', 'meningioma']
 
 # Ensure uploads directory exists
-UPLOAD_DIR = "./Uploads"
+UPLOAD_DIR = "Uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Title and layout
