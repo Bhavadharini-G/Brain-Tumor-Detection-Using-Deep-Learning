@@ -28,7 +28,23 @@ This project is a deep learning-powered web application that classifies brain tu
 - Framework: **TensorFlow/Keras**
 - Architecture: Custom CNN
 - Input Image Size: **128x128**
-- Model File: `Models/model.h5`
+- Model File: `Models/model.h5` *(downloaded automatically)*
+
+> **Note:**  
+> The `model.h5` file is **not** included in the local repository. It is hosted on Google Drive and automatically downloaded using `gdown` when the application starts.  
+> Ensure `gdown` is installed (`pip install gdown`), and the download command is included in your script.
+
+### Sample `gdown` usage in your script:
+```python
+import os
+import gdown
+
+model_path = 'Models/model.h5'
+if not os.path.exists(model_path):
+    os.makedirs('Models', exist_ok=True)
+    url = 'https://drive.google.com/uc?id=YOUR_FILE_ID'  # Replace with actual file ID
+    gdown.download(url, model_path, quiet=False)
+```
 
 ---
 
@@ -37,8 +53,8 @@ This project is a deep learning-powered web application that classifies brain tu
 ```
 BrainTumorDetection/
 ├── MRI Images/            # Optional: Dataset
-├── Models/                # Trained model stored here
-│   └── model.h5
+├── Models/                # Model will be downloaded here using gdown
+│   └── model.h5 (runtime download)
 ├── Templates/             # HTML templates for Flask
 │   └── index.html
 ├── Uploads/               # Uploaded MRI image files
@@ -84,6 +100,19 @@ Open your browser and go to `http://127.0.0.1:5000`
 
 ---
 
+## Sample UI Screenshot (Flask)
+
+![UI Screenshot](Deployment_Samples/sample_4.png) <!-- Replace with your own image if needed -->
+
+---
+
+## Sample MRI Prediction (Flask)
+
+![Sample Prediction](Deployment_Samples/sample_1.png) <!-- Replace with your own image if needed -->
+
+---
+
+
 ## File Upload Behavior
 
 - Uploaded MRI images are stored inside the `Uploads/` directory.
@@ -91,11 +120,7 @@ Open your browser and go to `http://127.0.0.1:5000`
 
 ---
 
-## Sample UI Screenshot
 
-![App Screenshot](Uploads/sample.jpg) <!-- Replace with your own image if needed -->
-
----
 
 ## Deploy to Streamlit Cloud
 
@@ -105,7 +130,23 @@ Open your browser and go to `http://127.0.0.1:5000`
 python-3.10
 ```
 
-Push your code to GitHub, then link it to [Streamlit Cloud](https://streamlit.io/cloud).
+Push your code to GitHub, then link it to Streamlit Cloud.
+
+## Sample UI Screenshot (Streamlit)
+
+![UI Screenshot](Deployment_Samples/sample_2.png) <!-- Replace with your own image if needed -->
+
+---
+
+## Project Deployment 
+
+Project Deployment Link [Streamlit Cloud](https://brain-tumor-detection-using-deep-learning-9zmgjsgfeazgnn2yqqt9.streamlit.app/).
+
+---
+
+## Sample MRI Prediction (Streamlit)
+
+![Sample Prediction](Deployment_Samples/sample_3.png) <!-- Replace with your own image if needed -->
 
 ---
 
@@ -120,3 +161,4 @@ M.Tech Data Science, KCT
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
