@@ -5,7 +5,8 @@ st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
 
 import numpy as np
 from tensorflow.keras.models import load_model
-from keras.preprocessing.image import load_img, img_to_array
+from keras.preprocessing.image import img_to_array
+from keras.utils import load_img
 from PIL import Image
 import os
 import gdown
@@ -26,10 +27,6 @@ model = load_model(MODEL_PATH)
 # Class labels
 class_labels = ['pituitary', 'glioma', 'notumor', 'meningioma']
 
-# Ensure upload folder exists
-UPLOAD_DIR = "Uploads"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 st.title("🧠 Brain Tumor Detection Using Deep Learning")
 st.markdown(
     "<p style='font-size:18px;'>Upload an MRI image, and this app will predict whether it contains a brain tumor.</p>",
@@ -39,10 +36,10 @@ st.markdown(
 # File uploader
 uploaded_file = st.file_uploader("📤 Upload an MRI image", type=["jpg", "jpeg", "png"])
 
-# Prediction function
-def predict_tumor(image_path):
+# Prediction function (directly from file-like object)
+def predict_tumor(uploaded_file):
     IMAGE_SIZE = 128
-    img = load_img(image_path, target_size=(IMAGE_SIZE, IMAGE_SIZE))
+    img = Image.open(uploaded_file).convert("RGB").resize((IMAGE_SIZE, IMAGE_SIZE))
     img_array = img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
@@ -58,16 +55,11 @@ def predict_tumor(image_path):
 # Main logic
 if uploaded_file is not None:
     try:
-        save_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
-        with open(save_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        st.success(f"✅ Image saved to: `{save_path}`")
-
         image = Image.open(uploaded_file)
-        st.image(image, caption="🖼️ Uploaded MRI Image", use_column_width=True)
+        st.image(image, caption="🖼️ Uploaded MRI Image", use_container_width=True)
 
         with st.spinner("🔎 Analyzing the image..."):
-            result, confidence, all_probs = predict_tumor(save_path)
+            result, confidence, all_probs = predict_tumor(uploaded_file)
 
         st.subheader("🩺 Prediction Result")
         st.success(result)
