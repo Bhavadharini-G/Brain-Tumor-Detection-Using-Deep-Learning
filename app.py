@@ -1,4 +1,8 @@
 import streamlit as st
+
+# ✅ Set page config FIRST
+st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
+
 import numpy as np
 from tensorflow.keras.models import load_model
 from keras.preprocessing.image import load_img, img_to_array
@@ -12,9 +16,8 @@ MODEL_ID =  '16ZEqwgUvhoY31gUXUEiTmKzLad5EB0OA'
 
 if not os.path.exists(MODEL_PATH):
     os.makedirs('Models', exist_ok=True)
-    download_url = f'https://drive.google.com/uc?id={MODEL_ID}'
     st.info("📥 Downloading model from Google Drive...")
-    gdown.download(download_url, MODEL_PATH, quiet=False)
+    gdown.download(f'https://drive.google.com/uc?id={MODEL_ID}', MODEL_PATH, quiet=False)
     st.success("✅ Model downloaded successfully!")
 
 # Load the model
@@ -27,10 +30,7 @@ class_labels = ['pituitary', 'glioma', 'notumor', 'meningioma']
 UPLOAD_DIR = "Uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Configure the Streamlit page
-st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
 st.title("🧠 Brain Tumor Detection Using Deep Learning")
-
 st.markdown(
     "<p style='font-size:18px;'>Upload an MRI image, and this app will predict whether it contains a brain tumor.</p>",
     unsafe_allow_html=True,
@@ -58,31 +58,25 @@ def predict_tumor(image_path):
 # Main logic
 if uploaded_file is not None:
     try:
-        # Save file
         save_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
         with open(save_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
         st.success(f"✅ Image saved to: `{save_path}`")
 
-        # Show uploaded image
         image = Image.open(uploaded_file)
         st.image(image, caption="🖼️ Uploaded MRI Image", use_column_width=True)
 
-        # Prediction
         with st.spinner("🔎 Analyzing the image..."):
             result, confidence, all_probs = predict_tumor(save_path)
 
-        # Results
         st.subheader("🩺 Prediction Result")
         st.success(result)
         st.info(f"🔬 Confidence: {confidence * 100:.2f}%")
 
-        # Show all class probabilities
         st.subheader("📊 Class Probabilities")
         for i, label in enumerate(class_labels):
             st.write(f"• **{label.capitalize()}**: {all_probs[i] * 100:.2f}%")
 
-        # Download result
         result_text = f"Prediction: {result}\nConfidence: {confidence * 100:.2f}%"
         st.download_button("📥 Download Result", data=result_text, file_name="tumor_prediction.txt")
 
