@@ -58,7 +58,6 @@ BrainTumorDetection/
 ├── Templates/             # HTML templates for Flask
 │   └── index.html
 ├── Uploads/               # Uploaded MRI image files
-├── .gitattributes
 ├── .gitignore
 ├── LICENSE
 ├── README.md              # Project documentation
