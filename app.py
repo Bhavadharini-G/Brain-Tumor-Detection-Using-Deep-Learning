@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
-from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import load_img, img_to_array
 from PIL import Image
 import os
 
@@ -11,11 +11,11 @@ model = load_model('Models/model.h5')
 # Class labels
 class_labels = ['pituitary', 'glioma', 'notumor', 'meningioma']
 
-# Ensure uploads directory exists
+# Ensure Uploads directory exists
 UPLOAD_DIR = "Uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Title and layout
+# Page config and title
 st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
 st.title("🧠 Brain Tumor Detection Using Deep Learning")
 
@@ -23,9 +23,9 @@ st.title("🧠 Brain Tumor Detection Using Deep Learning")
 uploaded_file = st.file_uploader("Upload an MRI image", type=["jpg", "jpeg", "png"])
 
 # Predict function
-def predict_tumor(image):
+def predict_tumor(image_path):
     IMAGE_SIZE = 128
-    img = image.resize((IMAGE_SIZE, IMAGE_SIZE))
+    img = load_img(image_path, target_size=(IMAGE_SIZE, IMAGE_SIZE))
     img_array = img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
@@ -38,23 +38,23 @@ def predict_tumor(image):
     else:
         return f"Tumor: {class_labels[predicted_class_index]}", confidence_score
 
-# If image is uploaded
+# Main logic
 if uploaded_file is not None:
-    # Save file to uploads directory
+    # Save file to Uploads folder
     save_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
     with open(save_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
-    st.info(f"✅ File saved to {save_path}")
+    st.info(f"✅ Image saved to: {save_path}")
 
-    # Load and display image
+    # Display image
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded MRI Image", use_container_width=True)
 
     # Predict
     with st.spinner("Analyzing the image..."):
-        result, confidence = predict_tumor(image)
+        result, confidence = predict_tumor(save_path)
 
-    # Show prediction
+    # Display result
     st.subheader("🩺 Prediction Result:")
     st.success(result)
     st.info(f"Confidence: {confidence * 100:.2f}%")
