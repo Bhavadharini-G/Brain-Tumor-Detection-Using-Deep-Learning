@@ -4,10 +4,20 @@ from tensorflow.keras.models import load_model
 from keras.preprocessing.image import load_img, img_to_array
 from PIL import Image
 import os
-from io import StringIO
+import gdown
+
+# === Download model from Google Drive if not already present ===
+MODEL_PATH = 'Models/model.h5'
+MODEL_ID =  '16ZEqwgUvhoY31gUXUEiTmKzLad5EB0OA'  
+
+if not os.path.exists(MODEL_PATH):
+    os.makedirs('Models', exist_ok=True)
+    download_url = f'https://drive.google.com/uc?id={MODEL_ID}'
+    st.info("📥 Downloading model from Google Drive...")
+    gdown.download(download_url, MODEL_PATH, quiet=False)
+    st.success("✅ Model downloaded successfully!")
 
 # Load the model
-MODEL_PATH = 'Models/model.h5'
 model = load_model(MODEL_PATH)
 
 # Class labels
